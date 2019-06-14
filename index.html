@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Crystals Collector</title>
+  <title>Deb's Trivia Game</title>
 
   <!-- Added link to the jQuery Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -17,40 +17,61 @@
 </head>
 
 <body>
-    <div class="row">
-      <div class="col-lg-3">
-        <div class="header">Crystals Collector!</div>
+
+
+  <!-- Overall Bootstrap Grid -->
+  <div class="container">
+
+    <!-- Jumbotron with Title -->
+    <!--div class="jumbotron">
+      <h1 class="text-center">
+        <span class="head">Travel Trivia</span>
+      </h1>
+
+      <hr>
+      <div id="musicControls" class="text-center">
+        <button class="btn btn-warning btn-xs theme-button">
+          <span class="fa fa-music"></span> Play Theme!</button>
+        <button class="btn btn-dark btn-xs pause-button">
+          <span class="fa fa-pause"></span> Pause Song</button>
+      </div-->
+    <div>
+      <h1 class="text-center">
+        <span class="head">World Trivia</span>
+      </h1>
+    </div>
+
+
+    <div class="row text-center">
+      <div class="col-sm-12">
+        <div id="timer"> </div>
+      </div>
+    </div>
+
+    <div class="row text-center">
+      <div class="col-sm-12">
+        <div id="question"> </div>
       </div>
     </div>
 
     <div class="row">
-      <div class="col-lg-4">
-        <div class="gamerules">
-          <p>You will be given a random number at the start of the game.</p>
-          <p>There are four crystals below. By clicking on a crystal you will add a specific amount of points to your
-            total score.</p>
-          <p>You win the game by matching your total score to random number, you lose the game if your total score goes
-            above the random number.</p>
-          <p>The value of each crystal is hidden from you until you click on it.</p>
-          <p>Each time when the game starts, the game will change the values of each crystal</p>
-        </div>
+      <div class="col-sm-12">
+        <div id="optionsBtn"> </div>
       </div>
     </div>
 
     <div class="row">
-      <div class="col-lg-2">
-        <h5 id="random-number"></h5>
-      </div>
-      <div class="col-lg-1">
+      <div class="col-sm-5">
         <div class="winloss">
-          <h5 id="wins-text">Wins:</h5>
-          <h5 id="losses-text">Losses:</h5>
-          <h5 id="game-status"></h5>
+          <h5 id="wins-text"></h5>
+          <h5 id="losses-text"></h5>
+          <h5 id="unanswered-text"></h5>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="row">
+  <!--div class="row">
       <div class="col-lg-5">
         <div class="row">
           <div class="col-lg-2">
@@ -84,8 +105,135 @@
       <div class="col-lg-3">
         <h5 id="user-score"></h5>
       </div>
-    </div>
-  <script src="assets/javascript/game.js"></script>
+    </div-->
+  <script type="text/javascript">
+    var questions = [
+      {
+        "question": "What day is it?",
+        "options": ["Monday", "Tuesday", "Wednesday", "Thursday"],
+        "answer": 3,
+        "url": "assets/images/question1.png"
+      },
+      {
+        "question": "What day was yesterday?",
+        "options": ["Monday", "Tuesday", "Wednesday", "Thursday"],
+        "answer": 2,
+        "url": "assets/images/question2.png"
+      }
+    ];
+    var correct = 0,
+      wrong = 0,
+      unanswered = 0,
+      currentQuestion = 0;
+
+    /*console.log(questions[0].question);
+    console.log(questions[0].options[questions[0].answer]);
+    console.log(questions[0].url);
+
+    console.log(questions[1].question);
+    console.log(questions[1].options[questions[1].answer]);
+    console.log(questions[1].url);*/
+
+    //  Set our number counter to 100.
+    var timelimit = 10;
+    var pausetime = 5;
+
+    //  Variable that will hold our interval ID when we execute
+    //  the "run" function
+    var intervalId;
+
+
+    //  The run function sets an interval
+    //  that runs the decrement function once a second.
+    //  *****BUG FIX******** 
+    //  Clearing the intervalId prior to setting our new intervalId will not allow multiple instances.
+    function startTimer() {
+      clearInterval(intervalId);
+      intervalId = setInterval(decrement, 1000);
+    }
+
+    //  The decrement function.
+    function decrement() {
+      //  Decrease number by one.
+      timelimit--;
+      //  Show the number in the #show-number tag.
+      // $("#timer").html("<h2>" + "Time Remaining: "+number + "</h2>");
+      $("#timer").text("Time Remaining: " + timelimit);
+
+
+      //  Once number hits zero...
+      if (timelimit === 0) {
+
+        //  ...run the stop function.
+        stop();
+
+        //  Alert the user that time is up.
+        //$("#timer").html("<h2>" + "Times Up!"+"</h2>");
+        $("#timer").text("Times Up!");
+      }
+    }
+
+    //  The stop function
+    function stop() {
+
+      //  Clears our intervalId
+      //  We just pass the name of the interval
+      //  to the clearInterval function.
+      clearInterval(intervalId);
+    }
+
+    //  display the start button
+
+    function initializeGame() {
+
+      var startBtn = $("<button>");
+      startBtn.addClass("start-button");
+      /* startBtn.attr("data-letter", letters[i]);*/
+      startBtn.text("Start");
+      $("#optionsBtn").append(startBtn);
+    }
+
+    function showQuestion(currentQuestion) {
+      $("#question").text(questions[currentQuestion].question);
+
+      for (var i = 0; i < questions[currentQuestion].options.length; i++) {
+
+        //create html programmatically
+        var optionBtn = $("<button>");
+        optionBtn.addClass("option");
+        optionBtn.attr("optionNum", i);
+        optionBtn.text(questions[currentQuestion].options[i]);
+        $("#optionsBtn").append(optionBtn);
+      }
+    }
+
+    //processing code
+    $(document).ready(function () {
+
+      initializeGame();
+
+
+      $(".start-button").on("click", function () {
+
+        //this will display the question and choices
+        for (var i = 0; i < questions.length; i++) {
+          startTimer();
+          showQuestion(i);
+        }
+
+        /*       //when a crystal is clicked, get the value and increment the user number
+               $(".option").on("click", function () {
+                 userScore += parseInt($(this).attr("value"));
+                 $("#user-score").text(userScore);
+                 checkResult(userScore, randomNumber);
+               });*/
+
+      });
+    });
+  </script>
+  
+  <!--script src="assets/javascript/app.js"></script-->
+  </div>
 </body>
 
 </html>

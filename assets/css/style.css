@@ -17,14 +17,19 @@ img {
    }
 
 body {
-      background-image: url("../images/halftone-yellow.png");
+      background-image: url("../images/globe.jpg");
    }
 
-h4 {
-   color:white;
-   background-color:teal;
-   margin-left:10px;
-} 
+.head {
+   background: rgb(139, 179, 231);
+   color: darkblue;
+   font-size: 80px;
+}
+
+.jumbotron {
+   background-color: white;
+   opacity: .3;
+}
 .header {
    background: darkorange;
    font-size: 40px;
@@ -48,12 +53,8 @@ h4 {
 
 }
 
-.crystal {
-   margin-left:10px;
-   margin-bottom:10px;
-   background-color:white;
-}
-.winloss{
+
+.winloss1{
    background-color: lightblue;
    color:black;
    height:100px;
@@ -66,12 +67,29 @@ h4 {
    margin-left:10px;
 }
 
-#random-number{
-   background-color:lightgreen;
+#timer{
+   background-color:rgb(239, 243, 239);
    color:black;
    height: 100px;
-   margin-left:10px;
-   margin-right:10px;
+   /*margin-left:10px;
+   margin-right:10px;*/
 }
 
+#question{
+   background-color:yellow;
+   color:blue;
+}
+#optionsBtn{
+   background-color:green;
+   color:yellow;
+}
+
+.start-button {
+   width: 100px;
+   height: 500px;
+   border-style: solid;
+   padding: 2px;
+   float: left;
+   margin: 2px;
+ }
 
