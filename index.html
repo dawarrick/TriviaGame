@@ -22,19 +22,6 @@
   <!-- Overall Bootstrap Grid -->
   <div class="container">
 
-    <!-- Jumbotron with Title -->
-    <!--div class="jumbotron">
-      <h1 class="text-center">
-        <span class="head">Travel Trivia</span>
-      </h1>
-
-      <hr>
-      <div id="musicControls" class="text-center">
-        <button class="btn btn-warning btn-xs theme-button">
-          <span class="fa fa-music"></span> Play Theme!</button>
-        <button class="btn btn-dark btn-xs pause-button">
-          <span class="fa fa-pause"></span> Pause Song</button>
-      </div-->
     <div>
       <h1 class="text-center">
         <span class="head">World Trivia</span>
@@ -54,58 +41,31 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row text-center">
       <div class="col-sm-12">
         <div id="optionsBtn"> </div>
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-sm-5">
+    <div class="row text-center">
+      <div class="col-sm-12">
+        <h3 id="response"> </h3>
+        <div id="responseImg"> </div>
+      </div>
+    </div>
+
+    <div class="row text-center">
+      <div class="col-sm-12">
         <div class="winloss">
-          <h5 id="wins-text"></h5>
-          <h5 id="losses-text"></h5>
+          <h5 id="correct-text"></h5>
+          <h5 id="wrong-text"></h5>
           <h5 id="unanswered-text"></h5>
         </div>
       </div>
     </div>
   </div>
 
-  <!--div class="row">
-      <div class="col-lg-5">
-        <div class="row">
-          <div class="col-lg-2">
-            <button id="button-1" class="btn crystal" value="0">
-              <img src="assets/images/1-crystal.png" /></button>
-          </div>
-          <div class="col-lg-2">
-            <button id="button-2" class="btn crystal" value="0">
-              <img src="assets/images/2-crystal.png" />
-            </button>
-          </div>
-          <div class="col-lg-2">
-            <button id="button-3" class="btn crystal" value="1">
-              <img src="assets/images/3-crystal.png" /></button>
-          </div>
-          <div class="col-lg-2">
-            <button id="button-4" class="btn crystal" value="1">
-              <img src="assets/images/4-crystal.png" />
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="row">
-      <div class="col-lg-3">
-        <h4>Your total score is</h4>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-lg-3">
-        <h5 id="user-score"></h5>
-      </div>
-    </div-->
   <script type="text/javascript">
     var questions = [
       {
@@ -134,12 +94,11 @@
     console.log(questions[1].options[questions[1].answer]);
     console.log(questions[1].url);*/
 
-    //  Set our number counter to 100.
+    //  Set our timer variable.
     var timelimit = 10;
-    var pausetime = 5;
+    var questiontime = 10;
+    var pausetime = 8000;
 
-    //  Variable that will hold our interval ID when we execute
-    //  the "run" function
     var intervalId;
 
 
@@ -147,7 +106,8 @@
     //  that runs the decrement function once a second.
     //  *****BUG FIX******** 
     //  Clearing the intervalId prior to setting our new intervalId will not allow multiple instances.
-    function startTimer() {
+    function startTimer(seconds) {
+      timelimit = seconds;
       clearInterval(intervalId);
       intervalId = setInterval(decrement, 1000);
     }
@@ -157,24 +117,21 @@
       //  Decrease number by one.
       timelimit--;
       //  Show the number in the #show-number tag.
-      // $("#timer").html("<h2>" + "Time Remaining: "+number + "</h2>");
-      $("#timer").text("Time Remaining: " + timelimit);
-
-
+      $("#timer").html("<h2>" + "Time Remaining: " + timelimit + "</h2>");
+      // $("#timer").text("Time Remaining: " + timelimit);
       //  Once number hits zero...
       if (timelimit === 0) {
-
         //  ...run the stop function.
-        stop();
-
+        stopTimer();
         //  Alert the user that time is up.
-        //$("#timer").html("<h2>" + "Times Up!"+"</h2>");
-        $("#timer").text("Times Up!");
+        $("#timer").html("<h2>" + "Times Up!" + "</h2>");
+        checkAnswer(-1);
       }
     }
 
+
     //  The stop function
-    function stop() {
+    function stopTimer() {
 
       //  Clears our intervalId
       //  We just pass the name of the interval
@@ -188,50 +145,120 @@
 
       var startBtn = $("<button>");
       startBtn.addClass("start-button");
-      /* startBtn.attr("data-letter", letters[i]);*/
       startBtn.text("Start");
       $("#optionsBtn").append(startBtn);
+      currentQuestion = 0;
+      wrong = 0;
+      correct = 0;
+      unanswered = 0;
     }
 
-    function showQuestion(currentQuestion) {
+    function showQuestion() {
       $("#question").text(questions[currentQuestion].question);
-
+      $("#optionsBtn").empty();
+      $("#response").empty();
+      $("#responseImg").empty();
       for (var i = 0; i < questions[currentQuestion].options.length; i++) {
-
         //create html programmatically
         var optionBtn = $("<button>");
         optionBtn.addClass("option");
-        optionBtn.attr("optionNum", i);
+        optionBtn.attr("optionnum", i);
         optionBtn.text(questions[currentQuestion].options[i]);
         $("#optionsBtn").append(optionBtn);
       }
+      startTimer(questiontime);
     }
+    //just determine if the answer is correct.
+    function checkAnswer(selected) {
+      //console.log("answernum " + answerNum + " selected " + selected);
+      stopTimer()
+     /* $("#response").empty();
+      $("#responseImg").empty();*/
+      var response = $("<img>");
+      if (questions[currentQuestion].answer === selected) {
+        displayResponse("yes");
+      }
+      else if (selected === -1)   //timed out
+      {
+        displayResponse("timed out", questions[currentQuestion].options[questions[currentQuestion].answer]);
+      }
+      else {
+        displayResponse("no", questions[currentQuestion].options[questions[currentQuestion].answer]);
+      }
+      //go to next question
+      currentQuestion++;
+      //was that the last question?
+      if (currentQuestion >= questions.length) {
+        setTimeout(function () {
+          gameOver();
+        }, 5000);
+        
+      }
+      else {
+        setTimeout(function () {
+          showQuestion();
+        }, 5000);
+        //startTimer(questiontime);
+      }
+    }
+
+    //show whether they got it right, and the image
+    function displayResponse(correctAnswer, actualAnswer) {
+      var response = "";
+      if (correctAnswer === "yes") {
+        response = "Way to go!";
+        correct++;
+      }
+      else if (correctAnswer === "no") {
+        response = "Bummer, keep trying!  Correct answer was: " + actualAnswer;
+        wrong++;
+      }
+      //then they didn't answer in time
+      else {
+        response = "Need to be faster, dude!  Correct answer was: " + actualAnswer;
+        unanswered++;
+      }
+
+      $("#response").text(response);
+      //console.log(questions[currentQuestion].url);
+      var imgURL = questions[currentQuestion].url;
+      var image = $("<img>").attr("src", imgURL);
+      $("#responseImg").append(image);
+
+    }
+
+    function gameOver() {
+      //first clear out the shown data
+      $("#question").text("");
+      $("#response").text("");
+      $("#responseImg").empty();
+      $("#optionsBtn").empty();
+      $("#correct-text").text("Correct Answers: " + correct);
+      $("#wrong-text").text("Wrong Answers: " + wrong);
+      $("#unanswered-text").text("Not Answered: " + unanswered);
+      initializeGame();
+    }
+
+    initializeGame();
 
     //processing code
     $(document).ready(function () {
 
-      initializeGame();
-
-
       $(".start-button").on("click", function () {
-
-        //this will display the question and choices
-        for (var i = 0; i < questions.length; i++) {
-          startTimer();
-          showQuestion(i);
-        }
-
-        /*       //when a crystal is clicked, get the value and increment the user number
-               $(".option").on("click", function () {
-                 userScore += parseInt($(this).attr("value"));
-                 $("#user-score").text(userScore);
-                 checkResult(userScore, randomNumber);
-               });*/
-
+        showQuestion();    
       });
+
+      //when answer selected, see if it is correct and display picture/message
+      $("#optionsBtn").on('click', '.option', function () {
+        console.log("option-click " + currentQuestion + " optionnum " + parseInt($(this).attr("optionnum")));
+        checkAnswer(parseInt($(this).attr("optionnum")));
+      });
+
+
+
     });
   </script>
-  
+
   <!--script src="assets/javascript/app.js"></script-->
   </div>
 </body>
