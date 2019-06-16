@@ -1,7 +1,7 @@
 //Javascript for the Trivia game
 var questions = [
   {
-    "question": "Polar Bears are only found near the North Pole and Penguins only near the South Pole?",
+    "question": "Polar Bears are only found near the North Pole and Penguins only near the South Pole.",
     "options": ["True", "False"],
     "answer": 0,
     "url": "assets/images/question1.png"
@@ -44,18 +44,18 @@ var questions = [
   },
   {
     "question": "What is the longest river in the U.S.?",
-    "options": ["Mississippi", "Rio Grande", "Missouri", "James"],
+    "options": ["Mississippi", "Rio Grande", "Missouri", "The James"],
     "answer": 2,
     "url": "assets/images/question8.png"
   },
   {
-    "question": "The U.S. has more coastline than any other country?",
+    "question": "The U.S. has more coastline than any other country.",
     "options": ["True", "False"],
     "answer": 1,
     "url": "assets/images/question9.png"
   },
   {
-    "question": "What is the smallest country in the world??",
+    "question": "What is the smallest country in the world?",
     "options": ["Saint Kitts", "Monaco", "Liechtenstein", "Vatican City"],
     "answer": 3,
     "url": "assets/images/question10.png"
@@ -70,9 +70,9 @@ var correct = 0,
 var firstGame = true;
 
 //timer variables
-var timelimit = 10,
-  questiontime = 10,
-  pausetime = 8000;
+var timelimit = 20,
+  questiontime = 20,
+  pausetime = 10000; 
 
 var intervalId;
 
@@ -89,10 +89,9 @@ function startTimer(seconds) {
 function decrement() {
   //  Decrease number by one.
   timelimit--;
-  //  Show the number in the #show-number tag.
+  // Show the time remaining
   $("#timer").html("<h2>" + "Time Remaining: " + timelimit + "</h2>");
-  // $("#timer").text("Time Remaining: " + timelimit);
-  //  Once number hits zero...
+  // didn't answer in time if it hits 0
   if (timelimit === 0) {
     // stop the timer
     stopTimer();
@@ -103,18 +102,17 @@ function decrement() {
   }
 }
 
-
 //  The stop function
 function stopTimer() {
   //  Clears our intervalId
   clearInterval(intervalId);
 }
 
-//  display the start button and reset variable
-
+// display the start button and reset variables for a new game
 function initializeGame() {
   var startBtn = $("<button>");
   startBtn.addClass("start-button");
+  //the button will have a different label depending upon whether it's the first time or not.
   if (firstGame) {
     startBtn.text("Start");
   }
@@ -122,6 +120,7 @@ function initializeGame() {
     startBtn.text("Start Over?");
   }
   $("#displayarea").append(startBtn);
+
   currentQuestion = 0;
   wrong = 0;
   correct = 0;
@@ -133,7 +132,7 @@ function showQuestion() {
   $("#displayarea").empty();
   //display question
   createElement("<div>", "question", questions[currentQuestion].question, "#displayarea");
-//console.log(questions[currentQuestion].question);
+
   //display options for answers
   for (var i = 0; i < questions[currentQuestion].options.length; i++) {
     $("#displayarea").append("<div>");
@@ -155,7 +154,6 @@ function showQuestion() {
     //console.log("answernum "  answerNm + " selected " + selected);
     stopTimer()
 
-    var response = $("<img>");
     if (questions[currentQuestion].answer === selected) {
       displayResponse("yes");
     }
@@ -169,17 +167,17 @@ function showQuestion() {
 
     currentQuestion++;
 
-    //was that the last question?  Display game info and pause
+    //was that the last question?  Display game info and pause or paus and show the next question
     if (currentQuestion >= questions.length) {
       setTimeout(function () {
         gameOver();
-      }, 5000);
+      }, pausetime);
 
     }
     else {
       setTimeout(function () {
         showQuestion();
-      }, 5000);
+      }, pausetime);
 
     }
   }
@@ -200,6 +198,7 @@ function showQuestion() {
       response = "Need to be faster, dude!  Correct answer was: " + actualAnswer;
       unanswered++;
     }
+    //clear the question and display the result
     $("#displayarea").empty();
     createElement("<div>", "response", response, "#displayarea");
 
@@ -210,7 +209,7 @@ function showQuestion() {
   }
 
   function gameOver() {
-    //first clear out the shown data
+    //first clear out the shown data then show the game stats
     $("#displayarea").empty();
 
     createElement("<div>", "gameoverhead", "Game Over", "#displayarea");
@@ -222,7 +221,7 @@ function showQuestion() {
   }
 
   function createElement(type, addclass, text, location) {
-    // console.log(tpe + " class " + addclass + " text " + text + " location " + location)
+  
     var addOne = $(type);
 
     if (addclass !== "") {
@@ -237,7 +236,7 @@ function showQuestion() {
   //start of the game
   initializeGame();
 
-  //processing code
+  //waiting on button clicks
   $(document).ready(function () {
 
     //   $(".start-button").on("click", function () {
