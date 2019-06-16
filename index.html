@@ -37,11 +37,11 @@
 
     <div class="row text-center">
       <div class="col-sm-12">
-        <div id="question"> </div>
+        <div id="displayarea"> </div>
       </div>
     </div>
 
-    <div class="row text-center">
+    <!--div class="row text-center">
       <div class="col-sm-12">
         <div id="optionsBtn"> </div>
       </div>
@@ -62,7 +62,7 @@
           <h5 id="unanswered-text"></h5>
         </div>
       </div>
-    </div>
+    </div-->
   </div>
 
 
@@ -98,18 +98,16 @@
     var timelimit = 10;
     var questiontime = 10;
     var pausetime = 8000;
-
+    firstGame = true;
     var intervalId;
 
 
-    //  The run function sets an interval
-    //  that runs the decrement function once a second.
-    //  *****BUG FIX******** 
-    //  Clearing the intervalId prior to setting our new intervalId will not allow multiple instances.
+    //Set the timer
     function startTimer(seconds) {
       timelimit = seconds;
       clearInterval(intervalId);
       intervalId = setInterval(decrement, 1000);
+      $("#timer").html("<h2>" + "Time Remaining: " + timelimit + "</h2>");
     }
 
     //  The decrement function.
@@ -121,10 +119,11 @@
       // $("#timer").text("Time Remaining: " + timelimit);
       //  Once number hits zero...
       if (timelimit === 0) {
-        //  ...run the stop function.
+        // stop the timer
         stopTimer();
-        //  Alert the user that time is up.
+        //Alert the user that time is up.
         $("#timer").html("<h2>" + "Times Up!" + "</h2>");
+        //display the answer info.
         checkAnswer(-1);
       }
     }
@@ -134,46 +133,60 @@
     function stopTimer() {
 
       //  Clears our intervalId
-      //  We just pass the name of the interval
-      //  to the clearInterval function.
       clearInterval(intervalId);
     }
 
-    //  display the start button
+    //  display the start button and reset variable
 
     function initializeGame() {
-
       var startBtn = $("<button>");
       startBtn.addClass("start-button");
-      startBtn.text("Start");
-      $("#optionsBtn").append(startBtn);
+      if (firstGame) {
+        startBtn.text("Start");
+      }
+      else {
+        startBtn.text("Start Over?");
+      }
+      $("#displayarea").append(startBtn);
       currentQuestion = 0;
       wrong = 0;
       correct = 0;
       unanswered = 0;
+      firstGame = false;
     }
 
     function showQuestion() {
-      $("#question").text(questions[currentQuestion].question);
-      $("#optionsBtn").empty();
-      $("#response").empty();
-      $("#responseImg").empty();
+      $("#displayarea").empty();
+      createElement("<div>", "question", questions[currentQuestion].question, "","#displayarea");
+/*      var question = $("<div>");
+      question.addClass("question");
+      question.text(questions[currentQuestion].question);
+      $("#displayarea").append(question);*/
+      /*     $("#optionsBtn").empty();
+           $("#response").empty();
+           $("#responseImg").empty();
+           */
       for (var i = 0; i < questions[currentQuestion].options.length; i++) {
         //create html programmatically
-        var optionBtn = $("<button>");
+        /*createElement("<div>","","","#displayarea")*/
+        $( "#displayarea" ).append( "<div>" );
+          createElement("<button>", "option", questions[currentQuestion].options[i], "optionnum,"+ i,"#displayarea");
+ /*       var optionBtn = $("<button>");
         optionBtn.addClass("option");
         optionBtn.attr("optionnum", i);
         optionBtn.text(questions[currentQuestion].options[i]);
-        $("#optionsBtn").append(optionBtn);
+        $("#displayarea").append(optionBtn);*/
+        $( "#displayarea" ).append( "</div>" );
       }
       startTimer(questiontime);
     }
-    //just determine if the answer is correct.
+
+    //determine if the answer is correct.
     function checkAnswer(selected) {
       //console.log("answernum " + answerNum + " selected " + selected);
       stopTimer()
-     /* $("#response").empty();
-      $("#responseImg").empty();*/
+      /* $("#response").empty();
+       $("#responseImg").empty();*/
       var response = $("<img>");
       if (questions[currentQuestion].answer === selected) {
         displayResponse("yes");
@@ -187,17 +200,19 @@
       }
       //go to next question
       currentQuestion++;
-      //was that the last question?
+
+      //was that the last question?  Display game info and pause
       if (currentQuestion >= questions.length) {
         setTimeout(function () {
           gameOver();
         }, 5000);
-        
+
       }
       else {
         setTimeout(function () {
           showQuestion();
         }, 5000);
+
         //startTimer(questiontime);
       }
     }
@@ -206,11 +221,11 @@
     function displayResponse(correctAnswer, actualAnswer) {
       var response = "";
       if (correctAnswer === "yes") {
-        response = "Way to go!";
+        response = "Correct - way to go!";
         correct++;
       }
       else if (correctAnswer === "no") {
-        response = "Bummer, keep trying!  Correct answer was: " + actualAnswer;
+        response = "Wrong answer, keep trying!  Correct answer was: " + actualAnswer;
         wrong++;
       }
       //then they didn't answer in time
@@ -218,25 +233,47 @@
         response = "Need to be faster, dude!  Correct answer was: " + actualAnswer;
         unanswered++;
       }
-
-      $("#response").text(response);
+      $("#displayarea").empty();
+      createElement("<div>", "response", response, "","#displayarea");
+      /*$("#response").text(response);*/
       //console.log(questions[currentQuestion].url);
       var imgURL = questions[currentQuestion].url;
       var image = $("<img>").attr("src", imgURL);
-      $("#responseImg").append(image);
+      $("#displayarea").append(image);
 
     }
 
     function gameOver() {
       //first clear out the shown data
-      $("#question").text("");
-      $("#response").text("");
-      $("#responseImg").empty();
-      $("#optionsBtn").empty();
-      $("#correct-text").text("Correct Answers: " + correct);
-      $("#wrong-text").text("Wrong Answers: " + wrong);
-      $("#unanswered-text").text("Not Answered: " + unanswered);
+      $("#displayarea").empty();
+      /*     $("#question").text("");
+            $("#response").text("");
+            $("#responseImg").empty();
+            $("#optionsBtn").empty();*/
+      createElement("<div>", "gameoverhead", "Game Over", "","#displayarea");
+      createElement("<div>", "gameover", "Correct Answers: " + correct, "","#displayarea");
+      createElement("<div>", "gameover", "Wrong Answers: " + wrong, "","#displayarea");
+      createElement("<div>", "gameover", "Not Answered: " + unanswered, "","#displayarea");
+      /*      $("#correct-text").text("Correct Answers: " + correct);
+            $("#wrong-text").text("Wrong Answers: " + wrong);
+            $("#unanswered-text").text("Not Answered: " + unanswered);*/
       initializeGame();
+    }
+
+    function createElement(type, addclass, text, attribute, location) {
+      console.log(type + " class " + addclass + " text " + text + " location " + location)
+      var addOne = $(type);
+      console.log(type + " " + addclass + " " + text + " " + location)
+      if (addclass !== "") {
+        addOne.addClass(addclass);
+      }
+      if (text !== "") {
+        addOne.text(text);
+      }
+      if (attribute !== "") {
+        addOne.attr(attribute);
+      }
+      $(location).append(addOne);
     }
 
     initializeGame();
@@ -244,12 +281,13 @@
     //processing code
     $(document).ready(function () {
 
-      $(".start-button").on("click", function () {
-        showQuestion();    
+      //    $(".start-button").on("click", function () {
+      $("#displayarea").on('click', '.start-button', function () {
+        showQuestion();
       });
 
       //when answer selected, see if it is correct and display picture/message
-      $("#optionsBtn").on('click', '.option', function () {
+      $("#displayarea").on('click', '.option', function () {
         console.log("option-click " + currentQuestion + " optionnum " + parseInt($(this).attr("optionnum")));
         checkAnswer(parseInt($(this).attr("optionnum")));
       });
