@@ -79,7 +79,7 @@ body {
 }
 
 @media (max-width: 640px) {
-	body {
+	.container {
       width:100%;
       height:100%;
       background-repeat: no-repeat;
