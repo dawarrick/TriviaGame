@@ -1,4 +1,5 @@
 //Javascript for the Trivia game
+//array of objects to provide questions and responses
 var questions = [
   {
     "question": "Polar Bears are only found near the North Pole and Penguins only near the South Pole.",
@@ -72,7 +73,7 @@ var firstGame = true;
 //timer variables
 var timelimit = 20,
   questiontime = 20,
-  pausetime = 10000; 
+  pausetime = 8000;
 
 var intervalId;
 
@@ -149,105 +150,107 @@ function showQuestion() {
 }
 
 
-  //determine if the answer is correct.
-  function checkAnswer(selected) {
-    //console.log("answernum "  answerNm + " selected " + selected);
-    stopTimer()
+//determine if the answer is correct.
+function checkAnswer(selected) {
+  stopTimer()
 
-    if (questions[currentQuestion].answer === selected) {
-      displayResponse("yes");
-    }
-    else if (selected === -1)   //timed out
-    {
-      displayResponse("timed out", questions[currentQuestion].options[questions[currentQuestion].answer]);
-    }
-    else {
-      displayResponse("no", questions[currentQuestion].options[questions[currentQuestion].answer]);
-    }
-
-    currentQuestion++;
-
-    //was that the last question?  Display game info and pause or paus and show the next question
-    if (currentQuestion >= questions.length) {
-      setTimeout(function () {
-        gameOver();
-      }, pausetime);
-
-    }
-    else {
-      setTimeout(function () {
-        showQuestion();
-      }, pausetime);
-
-    }
+  if (questions[currentQuestion].answer === selected) {
+    displayResponse("yes");
+  }
+  else if (selected === -1)   //timed out
+  {
+    displayResponse("timed out", questions[currentQuestion].options[questions[currentQuestion].answer]);
+  }
+  else {
+    displayResponse("no", questions[currentQuestion].options[questions[currentQuestion].answer]);
   }
 
-  //show whether they got it right, and the image
-  function displayResponse(correctAnswer, actualAnswer) {
-    var response = "";
-    if (correctAnswer === "yes") {
-      response = "Correct - way to go!";
-      correct++;
-    }
-    else if (correctAnswer === "no") {
-      response = "Wrong answer, keep trying!  Correct answer was: " + actualAnswer;
-      wrong++;
-    }
-    //then they didn't answer in time
-    else {
-      response = "Need to be faster, dude!  Correct answer was: " + actualAnswer;
-      unanswered++;
-    }
-    //clear the question and display the result
-    $("#displayarea").empty();
-    createElement("<div>", "response", response, "#displayarea");
+  currentQuestion++;
 
-    var imgURL = questions[currentQuestion].url;
-    var image = $("<img>").attr("src", imgURL);
-    $("#displayarea").append(image);
+  //was that the last question?  Display game info and pause or paus and show the next question
+  if (currentQuestion >= questions.length) {
+    setTimeout(function () {
+      gameOver();
+    }, pausetime);
 
   }
+  else {
+    setTimeout(function () {
+      showQuestion();
+    }, pausetime);
 
-  function gameOver() {
-    //first clear out the shown data then show the game stats
-    $("#displayarea").empty();
+  }
+}
 
-    createElement("<div>", "gameoverhead", "Game Over", "#displayarea");
-    createElement("<div>", "gameover", "Correct Answers: " + correct, "#displayarea");
-    createElement("<div>", "gameover", "Wrong Answers: " + wrong, "#displayarea");
-    createElement("<div>", "gameover", "Not Answered: " + unanswered, "#displayarea");
-
-    initializeGame();
+//show whether they got it right, and the image
+function displayResponse(correctAnswer, actualAnswer) {
+  var response = "";
+  if (correctAnswer === "yes") {
+    response = "Correct - way to go!";
+    correct++;
+  }
+  else if (correctAnswer === "no") {
+    response = "Wrong answer, keep trying!  Correct answer was: " + actualAnswer;
+    wrong++;
+  }
+  //then they didn't answer in time
+  else {
+    response = "Need to be faster, dude!  Correct answer was: " + actualAnswer;
+    unanswered++;
   }
 
-  function createElement(type, addclass, text, location) {
-  
-    var addOne = $(type);
+  //clear the question and display the result
+  $("#displayarea").empty();
+  createElement("<div>", "response", response, "#displayarea");
 
-    if (addclass !== "") {
-      addOne.addClass(addclass);
-    }
-    if (text !== "") {
-      addOne.text(text);
-    }
-    $(location).append(addOne);
+  var imgURL = questions[currentQuestion].url;
+  var image = $("<img>").attr("src", imgURL);
+  $("#displayarea").append(image);
+
+}
+
+function gameOver() {
+  //first clear out the shown data then show the game stats
+  $("#displayarea").empty();
+
+  //show game stats
+  createElement("<div>", "gameoverhead", "Game Over", "#displayarea");
+  createElement("<div>", "gameover", "Correct Answers: " + correct, "#displayarea");
+  createElement("<div>", "gameover", "Wrong Answers: " + wrong, "#displayarea");
+  createElement("<div>", "gameover", "Not Answered: " + unanswered, "#displayarea");
+
+  //display start button and reset variables.
+  initializeGame();
+}
+
+//function will create an element based on parameters passed
+function createElement(type, addclass, text, location) {
+  var addOne = $(type);
+
+  if (addclass !== "") {
+    addOne.addClass(addclass);
   }
+  if (text !== "") {
+    addOne.text(text);
+  }
+  $(location).append(addOne);
+}
 
-  //start of the game
+
+//waiting on button clicks
+$(document).ready(function () {
+
+  //initialize screen and variables
   initializeGame();
 
-  //waiting on button clicks
-  $(document).ready(function () {
 
-    //   $(".start-button").on("click", function () {
-    $("#displayarea").on('click', '.start-button', function () {
-      showQuestion();
-    });
-
-    //when answer selected, see if it is correct and display picture/message
-    $("#displayarea").on('click', '.option', function () {
-      //console.log("option-click " + currentQuestion + " optionnum " + parseInt($(this).attr("optionnum")));
-      checkAnswer(parseInt($(this).attr("optionnum")));
-    });
-
+  $("#displayarea").on('click', '.start-button', function () {
+    showQuestion();
   });
+
+  //when answer selected, see if it is correct and display picture/message
+  $("#displayarea").on('click', '.option', function () {
+    checkAnswer(parseInt($(this).attr("optionnum")));
+  });
+
+});
