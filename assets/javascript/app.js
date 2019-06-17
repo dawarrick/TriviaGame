@@ -136,13 +136,13 @@ function showQuestion() {
 
   //display options for answers
   for (var i = 0; i < questions[currentQuestion].options.length; i++) {
-    $("#displayarea").append("<div>");
+ 
     var optionBtn = $("<button>");
     optionBtn.addClass("option");
     optionBtn.attr("optionnum", i);
     optionBtn.text(questions[currentQuestion].options[i]);
     $("#displayarea").append(optionBtn);
-    $("#displayarea").append("</div>");
+    $("#displayarea").append("<br>");
 
     //start the timer
     startTimer(questiontime);
